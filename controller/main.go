@@ -9,6 +9,8 @@ Email:    sinerwr@gmail.com
 package controller
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"google.golang.org/grpc"
 	"os"
@@ -30,6 +32,13 @@ func GenerateRand() string {
 	return v
 }
 
+func Sha256Encrypt(v string) string {
+	hash := sha256.New()
+	hash.Write([]byte(v))
+	return hex.EncodeToString(hash.Sum(nil))
+}
+
 func init() {
-	pb.RegisterOpenServer(S, &Open{})
+	pb.RegisterAAA_OpenServer(S, &AAA_Open{})
+	pb.RegisterAAA_SecretServer(S, &AAA_Secret{})
 }

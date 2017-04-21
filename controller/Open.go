@@ -21,9 +21,9 @@ var (
 	secret string
 )
 
-type Open struct{}
+type AAA_Open struct{}
 
-func (o *Open) RegUser(ctx context.Context, in *pb.OpenRequest) (*pb.APIKeypair, error) {
+func (o *AAA_Open) AAA_RegUser(ctx context.Context, in *pb.AAA_OpenRequest) (*pb.AAA_APIKeypair, error) {
 	action := in.Request
 
 	if action == "reg" {
@@ -32,14 +32,17 @@ func (o *Open) RegUser(ctx context.Context, in *pb.OpenRequest) (*pb.APIKeypair,
 			if i == 5 {
 				notExist = true
 				LogErrMsg(20, "controller.RegUser")
-				return &pb.APIKeypair{Key: "", Secret: ""}, nil
+				return &pb.AAA_APIKeypair{Key: "", Secret: ""}, nil
 			}
 			key = GenerateRand()
 			secret = GenerateRand()
-			data := &dao.UserKeypair{Key: key, Secret: secret}
-			notExist = data.Insert()
+			enkey := Sha256Encrypt(key)
+			keypair := &UserKeypair{Key: enkey, Secret: secret}
+			auth := &UserAuth{Key: enkey}
+			notExist = dao.Mgo_Insert(keypair, "user.keypair")
+			dao.Mgo_Insert(auth, "user.auth")
 		}
-		return &pb.APIKeypair{Key: key, Secret: secret}, nil
+		return &pb.AAA_APIKeypair{Key: key, Secret: secret}, nil
 	}
-	return &pb.APIKeypair{}, nil
+	return &pb.AAA_APIKeypair{}, nil
 }
