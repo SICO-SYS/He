@@ -14,8 +14,6 @@ WORKDIR $GOPATH/bin/
 
 RUN rm -rf $GOPATH/src
 
-ADD config.sample.json $GOPATH/bin/config.json
-
 EXPOSE 6666
 
 VOLUME $GOPATH/bin/config.json
