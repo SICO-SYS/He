@@ -10,32 +10,36 @@ package controller
 
 import (
 	"golang.org/x/net/context"
-	"math"
-	"strconv"
+	// "math"
+	// "strconv"
 	"strings"
-	"time"
+	// "time"
 
 	"github.com/SiCo-DevOps/Pb"
 	"github.com/SiCo-DevOps/dao"
 	. "github.com/SiCo-DevOps/log"
+	"github.com/SiCo-DevOps/public"
 )
 
 type UserKeypair struct {
-	Key    string "key"
-	Secret string "secret"
+	Id    string "id"
+	Key   string "key"
+	Email string "email"
+	Time  string "createtime"
 }
 
 type UserAuth struct {
-	Key         string   "key"
+	Id          string   "id"
 	QueryMember []string "query_member"
 	AdminMember []string "admin_member"
 	Group       []string "group"
 }
 
 type UserThirdparty struct {
-	Key   string "key"
-	ID    string "id"
-	Token string "token"
+	ID         string "id"
+	CloudAlias string "name"
+	CloudID    string "cloudid"
+	CloudKey   string "cloudkey"
 }
 
 type AAA_Secret struct{}
@@ -45,13 +49,9 @@ func AAA(k string, t string) bool {
 	r := UserKeypair{}
 	conn := dao.MgoUserConn.Clone()
 	defer conn.Close()
-	conn.DB("SiCo").C("user.keypair").Find(dao.Mgo_Find("key", k)).One(&r)
-	ts := time.Now().Unix()
-	now := float64(ts / 30)
-	stnow := strconv.Itoa(int(math.Floor(now)))
-	stnowf := strconv.Itoa(int(math.Floor(now + 1)))
-	stnows := strconv.Itoa(int(math.Floor(now - 1)))
-	if t == Sha256Encrypt(r.Secret+stnow) || t == Sha256Encrypt(r.Secret+stnows) || t == Sha256Encrypt(r.Secret+stnowf) {
+	conn.DB("SiCo").C("user.keypair").Find(dao.Mgo_Find("id", k)).One(&r)
+	sbefore, snow, safter := public.Per30sTimes()
+	if t == public.Sha256Encrypt(r.Key+sbefore) || t == public.Sha256Encrypt(r.Key+snow) || t == public.Sha256Encrypt(r.Key+safter) {
 		return true
 	}
 	LogErrMsg(50, "controller.AAA")
@@ -59,14 +59,14 @@ func AAA(k string, t string) bool {
 }
 
 func (a *AAA_Secret) AAA_Auth(ctx context.Context, in *pb.AAA_APIToken) (*pb.ResponseMsg, error) {
-	if AAA(in.Key, in.Token) {
+	if AAA(in.Id, in.Signature) {
 		return &pb.ResponseMsg{Code: 0}, nil
 	}
 	return &pb.ResponseMsg{Code: 2}, nil
 }
 
 func (s *AAA_Secret) AAA_ThirdKeypair(ctx context.Context, in *pb.AAA_ThirdpartyKey) (*pb.ResponseMsg, error) {
-	if AAA(in.Apitoken.Key, in.Apitoken.Token) {
+	if AAA(in.Apitoken.Id, in.Apitoken.Signature) {
 		c := "user.cloud."
 		switch strings.ToLower(in.Apitype) {
 		case "aws":
@@ -78,12 +78,13 @@ func (s *AAA_Secret) AAA_ThirdKeypair(ctx context.Context, in *pb.AAA_Thirdparty
 		default:
 			return &pb.ResponseMsg{Code: 2, Msg: "Not support cloud"}, nil
 		}
-		v := &UserThirdparty{in.Apitoken.Key, in.Id, in.Key}
+		v := &UserThirdparty{in.Apitoken.Id, in.Name, in.Id, in.Key}
 		ok := dao.Mgo_Insert(v, c)
 		if ok {
 			return &pb.ResponseMsg{Code: 0}, nil
 		}
 		LogErrMsg(20, "controller.AAA_ThirdKeypair")
+		return &pb.ResponseMsg{Code: 2, Msg: "Cannot Setup new keypair, maybe name exist"}, nil
 	}
 	return &pb.ResponseMsg{Code: 2, Msg: "AAA failed"}, nil
 }
