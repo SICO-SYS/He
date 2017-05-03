@@ -10,10 +10,7 @@ package controller
 
 import (
 	"golang.org/x/net/context"
-	// "math"
-	// "strconv"
 	"strings"
-	// "time"
 
 	"github.com/SiCo-DevOps/Pb"
 	"github.com/SiCo-DevOps/dao"
@@ -87,4 +84,30 @@ func (s *AAA_Secret) AAA_ThirdKeypair(ctx context.Context, in *pb.AAA_Thirdparty
 		return &pb.ResponseMsg{Code: 2, Msg: "Cannot Setup new keypair, maybe name exist"}, nil
 	}
 	return &pb.ResponseMsg{Code: 2, Msg: "AAA failed"}, nil
+}
+
+func (a *AAA_Secret) AAA_GetThirdKey(ctx context.Context, in *pb.AAA_ThirdpartyKey) (*pb.AAA_APIKeypair, error) {
+	if !AAA(in.Apitoken.Id, in.Apitoken.Signature) {
+		return &pb.AAA_APIKeypair{Id: "", Key: ""}, nil
+	}
+	c := "user.cloud."
+	switch strings.ToLower(in.Apitype) {
+	case "aws":
+		c += in.Apitype
+	case "qcloud":
+		c += in.Apitype
+	case "aliyun":
+		c += in.Apitype
+	default:
+		return &pb.AAA_APIKeypair{Id: "cloudfailed", Key: ""}, nil
+	}
+
+	query := dao.Mgo_Querys{"id": in.Apitoken.Id, "name": in.Name}
+	result := query.Mgo_FindsOne(c)
+	cloudid, ok := result["cloudid"].(string)
+	cloudkey, _ := result["cloudkey"].(string)
+	if !ok {
+		return &pb.AAA_APIKeypair{Id: "getresult failed", Key: ""}, nil
+	}
+	return &pb.AAA_APIKeypair{Id: cloudid, Key: cloudkey}, nil
 }

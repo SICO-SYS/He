@@ -12,10 +12,11 @@ import (
 	"net"
 
 	"github.com/SiCo-DevOps/He/controller"
+	"github.com/SiCo-DevOps/cfg"
 )
 
 func Run() {
-	lis, _ := net.Listen("tcp", ":6666")
+	lis, _ := net.Listen("tcp", cfg.Config.Rpc.He)
 	controller.S.Serve(lis)
 }
 
