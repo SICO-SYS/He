@@ -18,19 +18,26 @@
   },
   "mongo": {
     "default": {
-      "host": "127.0.0.1",
-      "port": "27017",
+      "addr": "127.0.0.1:27017",
       "user": "root",
-      "pass": "xxZ8SyeS3ryyoN",
-      "name": "default"
+      "pass": "xxZ8SyeS3ryyoN"
     },
-    "geo": {
-      "host": "127.0.0.1",
-      "port": "27017",
+    "user": {
+      "addr": "127.0.0.1:27017",
       "user": "root",
-      "pass": "xxZ8SyeS3ryyoN",
-      "name": "geo"
+      "pass": "xxZ8SyeS3ryyoN"
+    },
+    "cloud": {
+      "addr": "127.0.0.1:27017",
+      "user": "root",
+      "pass": "xxZ8SyeS3ryyoN"
+    },
+    "asset": {
+      "addr": "127.0.0.1:27017",
+      "user": "root",
+      "pass": "xxZ8SyeS3ryyoN"
     }
+  },
   },
   "redis": {
     "default": {
