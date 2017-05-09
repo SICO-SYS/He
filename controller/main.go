@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/SiCo-DevOps/Pb"
-	"github.com/SiCo-DevOps/dao"
+	"github.com/SiCo-DevOps/dao/mongo"
 )
 
 var (
@@ -24,7 +24,7 @@ func init() {
 	defer func() {
 		recover()
 	}()
-	dao.AAA_ensureIndexes()
+	mongo.AAA_ensureIndexes()
 	pb.RegisterAAA_OpenServer(S, &AAA_Open{})
 	pb.RegisterAAA_SecretServer(S, &AAA_Secret{})
 }

@@ -12,7 +12,7 @@ import (
 	"golang.org/x/net/context"
 
 	"github.com/SiCo-DevOps/Pb"
-	"github.com/SiCo-DevOps/dao"
+	"github.com/SiCo-DevOps/dao/mongo"
 	. "github.com/SiCo-DevOps/log"
 	"github.com/SiCo-DevOps/public"
 )
@@ -36,10 +36,10 @@ func (o *AAA_Open) AAA_RegUser(ctx context.Context, in *pb.AAA_RegRequest) (*pb.
 		id = public.GenHexString()
 		key = public.GenHexString()
 		keypair := &UserKeypair{Id: id, Key: key, Email: email, Time: public.Now()}
-		notExist = dao.Mgo_Insert(keypair, "user.keypair")
+		notExist = mongo.Mgo_Insert(mongo.MgoUserConn, keypair, "user.keypair")
 		if notExist {
 			auth := &UserAuth{Id: id}
-			dao.Mgo_Insert(auth, "user.auth")
+			mongo.Mgo_Insert(mongo.MgoUserConn, auth, "user.auth")
 		}
 	}
 	return &pb.AAA_APIKeypair{Id: id, Key: key}, nil

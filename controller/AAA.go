@@ -13,7 +13,7 @@ import (
 	"strings"
 
 	"github.com/SiCo-DevOps/Pb"
-	"github.com/SiCo-DevOps/dao"
+	"github.com/SiCo-DevOps/dao/mongo"
 	. "github.com/SiCo-DevOps/log"
 	"github.com/SiCo-DevOps/public"
 )
@@ -44,9 +44,9 @@ type AAA_Secret struct{}
 func AAA(k string, t string) bool {
 	defer func() { recover(); LogProduce("error", "Execute AAA failed") }()
 	r := UserKeypair{}
-	conn := dao.MgoUserConn.Clone()
+	conn := mongo.MgoUserConn.Clone()
 	defer conn.Close()
-	conn.DB("SiCo").C("user.keypair").Find(dao.Mgo_Find("id", k)).One(&r)
+	conn.DB("SiCo").C("user.keypair").Find(mongo.Mgo_Find("id", k)).One(&r)
 	sbefore, snow, safter := public.Per30sTimes()
 	if t == public.Sha256Encrypt(r.Key+sbefore) || t == public.Sha256Encrypt(r.Key+snow) || t == public.Sha256Encrypt(r.Key+safter) {
 		return true
@@ -76,7 +76,7 @@ func (s *AAA_Secret) AAA_ThirdKeypair(ctx context.Context, in *pb.AAA_Thirdparty
 			return &pb.ResponseMsg{Code: 2, Msg: "Not support cloud"}, nil
 		}
 		v := &UserThirdparty{in.Apitoken.Id, in.Name, in.Id, in.Key}
-		ok := dao.Mgo_Insert(v, c)
+		ok := mongo.Mgo_Insert(mongo.MgoUserConn, v, c)
 		if ok {
 			return &pb.ResponseMsg{Code: 0}, nil
 		}
@@ -102,8 +102,8 @@ func (a *AAA_Secret) AAA_GetThirdKey(ctx context.Context, in *pb.AAA_ThirdpartyK
 		return &pb.AAA_APIKeypair{Id: "cloudfailed", Key: ""}, nil
 	}
 
-	query := dao.Mgo_Querys{"id": in.Apitoken.Id, "name": in.Name}
-	result := query.Mgo_FindsOne(c)
+	query := mongo.Mgo_Querys{"id": in.Apitoken.Id, "name": in.Name}
+	result := query.Mgo_FindsOne(mongo.MgoUserConn, c)
 	cloudid, ok := result["cloudid"].(string)
 	cloudkey, _ := result["cloudkey"].(string)
 	if !ok {
