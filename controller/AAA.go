@@ -12,10 +12,10 @@ import (
 	"golang.org/x/net/context"
 	"strings"
 
-	"github.com/SiCo-DevOps/Pb"
-	"github.com/SiCo-DevOps/dao/mongo"
-	. "github.com/SiCo-DevOps/log"
-	"github.com/SiCo-DevOps/public"
+	"github.com/SiCo-Ops/Pb"
+	"github.com/SiCo-Ops/dao/mongo"
+	. "github.com/SiCo-Ops/log"
+	"github.com/SiCo-Ops/public"
 )
 
 type UserKeypair struct {

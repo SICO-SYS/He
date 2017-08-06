@@ -11,8 +11,8 @@ package controller
 import (
 	"google.golang.org/grpc"
 
-	"github.com/SiCo-DevOps/Pb"
-	"github.com/SiCo-DevOps/dao/mongo"
+	"github.com/SiCo-Ops/Pb"
+	"github.com/SiCo-Ops/dao/mongo"
 )
 
 var (
