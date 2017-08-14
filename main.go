@@ -16,8 +16,8 @@ import (
 )
 
 func Run() {
-	lis, _ := net.Listen("tcp", cfg.Config.Rpc.He)
-	controller.S.Serve(lis)
+	lis, _ := net.Listen("tcp", cfg.Config.RPCPort.He)
+	controller.RPCServer.Serve(lis)
 }
 
 func main() {

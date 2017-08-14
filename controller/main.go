@@ -16,15 +16,14 @@ import (
 )
 
 var (
-	S   = grpc.NewServer()
-	err error
+	RPCServer = grpc.NewServer()
 )
 
 func init() {
 	defer func() {
 		recover()
 	}()
-	mongo.AAA_ensureIndexes()
-	pb.RegisterAAA_OpenServer(S, &AAA_Open{})
-	pb.RegisterAAA_SecretServer(S, &AAA_Secret{})
+	mongo.AAAEnsureIndexes()
+	pb.RegisterAAAPublicServiceServer(RPCServer, &AAAPublicService{})
+	pb.RegisterAAAPrivateServiceServer(RPCServer, &AAAPrivateService{})
 }
