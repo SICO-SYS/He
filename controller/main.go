@@ -13,10 +13,12 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/SiCo-Ops/Pb"
+	"github.com/SiCo-Ops/cfg"
 	"github.com/SiCo-Ops/dao/mongo"
 )
 
 var (
+	config    = cfg.Config
 	RPCServer = grpc.NewServer()
 )
 
