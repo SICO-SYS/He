@@ -17,13 +17,6 @@ import (
 	"github.com/SiCo-Ops/public"
 )
 
-type UserThirdparty struct {
-	ID         string "id"
-	CloudAlias string "name"
-	CloudID    string "cloudid"
-	CloudKey   string "cloudkey"
-}
-
 type AAAPrivateService struct{}
 
 func Authentication(k string, t string) bool {
@@ -46,30 +39,6 @@ func (a *AAAPrivateService) AuthenticationRPC(ctx context.Context, in *pb.AAATok
 	return &pb.AAATokenBack{Valid: false}, nil
 }
 
-// func (s *AAA_Secret) AAA_ThirdKeypair(ctx context.Context, in *pb.AAA_ThirdpartyKey) (*pb.ResponseMsg, error) {
-// 	if AAA(in.Apitoken.Id, in.Apitoken.Signature) {
-// 		c := "user.cloud."
-// 		switch strings.ToLower(in.Apitype) {
-// 		case "aws":
-// 			c += in.Apitype
-// 		case "qcloud":
-// 			c += in.Apitype
-// 		case "aliyun":
-// 			c += in.Apitype
-// 		default:
-// 			return &pb.ResponseMsg{Code: 2, Msg: "Not support cloud"}, nil
-// 		}
-// 		v := &UserThirdparty{in.Apitoken.Id, in.Name, in.Id, in.Key}
-// 		ok := mongo.Mgo_Insert(mongo.MgoUserConn, v, c)
-// 		if ok {
-// 			return &pb.ResponseMsg{Code: 0}, nil
-// 		}
-// 		LogErrMsg(20, "controller.AAA_ThirdKeypair")
-// 		return &pb.ResponseMsg{Code: 2, Msg: "Cannot Setup new keypair, maybe name exist"}, nil
-// 	}
-// 	return &pb.ResponseMsg{Code: 2, Msg: "AAA failed"}, nil
-// }
-
 // func (a *AAA_Secret) AAA_GetThirdKey(ctx context.Context, in *pb.AAA_ThirdpartyKey) (*pb.AAA_APIKeypair, error) {
 // 	if !AAA(in.Apitoken.Id, in.Apitoken.Signature) {
 // 		return &pb.AAA_APIKeypair{Id: "", Key: ""}, nil
@@ -86,12 +55,4 @@ func (a *AAAPrivateService) AuthenticationRPC(ctx context.Context, in *pb.AAATok
 // 		return &pb.AAA_APIKeypair{Id: "cloudfailed", Key: ""}, nil
 // 	}
 
-// 	query := mongo.Mgo_Querys{"id": in.Apitoken.Id, "name": in.Name}
-// 	result := query.Mgo_FindsOne(mongo.MgoUserConn, c)
-// 	cloudid, ok := result["cloudid"].(string)
-// 	cloudkey, _ := result["cloudkey"].(string)
-// 	if !ok {
-// 		return &pb.AAA_APIKeypair{Id: "getresult failed", Key: ""}, nil
-// 	}
-// 	return &pb.AAA_APIKeypair{Id: cloudid, Key: cloudkey}, nil
 // }
