@@ -38,21 +38,3 @@ func (a *AAAPrivateService) AuthenticationRPC(ctx context.Context, in *pb.AAATok
 	}
 	return &pb.AAATokenBack{Valid: false}, nil
 }
-
-// func (a *AAA_Secret) AAA_GetThirdKey(ctx context.Context, in *pb.AAA_ThirdpartyKey) (*pb.AAA_APIKeypair, error) {
-// 	if !AAA(in.Apitoken.Id, in.Apitoken.Signature) {
-// 		return &pb.AAA_APIKeypair{Id: "", Key: ""}, nil
-// 	}
-// 	c := "user.cloud."
-// 	switch strings.ToLower(in.Apitype) {
-// 	case "aws":
-// 		c += in.Apitype
-// 	case "qcloud":
-// 		c += in.Apitype
-// 	case "aliyun":
-// 		c += in.Apitype
-// 	default:
-// 		return &pb.AAA_APIKeypair{Id: "cloudfailed", Key: ""}, nil
-// 	}
-
-// }
