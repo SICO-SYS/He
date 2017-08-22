@@ -10,7 +10,6 @@ package controller
 
 import (
 	"golang.org/x/net/context"
-	// "strings"
 
 	"github.com/SiCo-Ops/Pb"
 	"github.com/SiCo-Ops/dao/mongo"
@@ -19,14 +18,14 @@ import (
 
 type AAAPrivateService struct{}
 
-func Authentication(k string, t string) bool {
+func Authentication(id string, signature string) bool {
 	defer func() { recover() }()
 	r := UserToken{}
 	conn := mongo.MgoUserConn.Clone()
 	defer conn.Close()
-	conn.DB("SiCo").C("user.token").Find(mongo.MgoFind("id", k)).One(&r)
+	conn.DB("SiCo").C("user.token").Find(mongo.MgoFind("id", id)).One(&r)
 	prevTS, currentTS, nextTS := public.TimesPer30s()
-	if t == public.EncryptWithSha256(r.Key+prevTS) || t == public.EncryptWithSha256(r.Key+currentTS) || t == public.EncryptWithSha256(r.Key+nextTS) {
+	if signature == public.EncryptWithSha256(r.Key+prevTS) || signature == public.EncryptWithSha256(r.Key+currentTS) || signature == public.EncryptWithSha256(r.Key+nextTS) {
 		return true
 	}
 	return false
