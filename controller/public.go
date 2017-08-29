@@ -50,9 +50,9 @@ func (o *AAAPublicService) GenerateTokenRPC(ctx context.Context, in *pb.AAAGener
 		tokenID = public.GenerateHexString()
 		tokenKey = public.GenerateHexString()
 		token := &UserToken{tokenID, tokenKey, email, phone, public.Now()}
-		tokenExist = mongo.MgoInsert(mongo.MgoUserConn, token, "user.token")
+		tokenExist = mongo.Insert(mongo.UserConn, token, mongo.CollectionUserTokenName())
 		if tokenExist == true {
-			mongo.MgoInsert(mongo.MgoUserConn, &UserPolicy{Id: tokenID}, "user.policy")
+			mongo.Insert(mongo.UserConn, &UserPolicy{Id: tokenID}, mongo.CollectionUserPolicyName())
 		}
 	}
 	return &pb.AAAGenerateTokenBack{Id: tokenID, Key: tokenKey}, nil
