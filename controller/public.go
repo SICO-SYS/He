@@ -9,6 +9,7 @@ Email:    sinerwr@gmail.com
 package controller
 
 import (
+	"github.com/getsentry/raven-go"
 	"golang.org/x/net/context"
 
 	"github.com/SiCo-Ops/Pb"
@@ -41,19 +42,27 @@ type AAAPublicService struct{}
 func (o *AAAPublicService) GenerateTokenRPC(ctx context.Context, in *pb.AAAGenerateTokenCall) (*pb.AAAGenerateTokenBack, error) {
 	email := in.Email
 	phone := in.Phone
-	tokenExist := false
-	for i := 0; tokenExist == false; i++ {
-		if i == 5 {
-			tokenExist = true
-			return &pb.AAAGenerateTokenBack{Id: "", Key: ""}, nil
-		}
+	if email == "" && phone == "" {
+		return &pb.AAAGenerateTokenBack{Code: 1003}, nil
+	}
+	for i := 0; true; i++ {
 		tokenID = public.GenerateHexString()
 		tokenKey = public.GenerateHexString()
 		token := &UserToken{tokenID, tokenKey, email, phone, public.Now()}
-		tokenExist = mongo.Insert(userDB, token, mongo.CollectionUserTokenName())
-		if tokenExist == true {
-			mongo.Insert(userDB, &UserPolicy{Id: tokenID}, mongo.CollectionUserPolicyName())
+		err := mongo.Insert(userDB, mongo.CollectionUserTokenName(), token)
+		if err != nil {
+			if i >= 4 {
+				raven.CaptureError(err, nil)
+				return &pb.AAAGenerateTokenBack{Code: 201}, nil
+			}
+			continue
 		}
+		err = mongo.Insert(userDB, mongo.CollectionUserPolicyName(), &UserPolicy{Id: tokenID})
+		if err != nil {
+			raven.CaptureError(err, nil)
+			return &pb.AAAGenerateTokenBack{Code: 201}, nil
+		}
+		break
 	}
-	return &pb.AAAGenerateTokenBack{Id: tokenID, Key: tokenKey}, nil
+	return &pb.AAAGenerateTokenBack{Code: 0, Id: tokenID, Key: tokenKey}, nil
 }
