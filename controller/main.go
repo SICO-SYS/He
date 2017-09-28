@@ -55,8 +55,8 @@ func init() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	pb.RegisterAAAPublicServiceServer(RPCServer, &AAAPublicService{})
-	pb.RegisterAAAPrivateServiceServer(RPCServer, &AAAPrivateService{})
+
+	pb.RegisterAAATokenServiceServer(RPCServer, &AAATokenService{})
 
 	if config.SentryHeStatus == "active" && config.SentryHeDSN != "" {
 		raven.SetDSN(config.SentryHeDSN)
