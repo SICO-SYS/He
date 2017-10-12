@@ -44,6 +44,9 @@ func Authentication(id string, signature string) (bool, int64) {
 	if err != nil {
 		return false, 201
 	}
+	if r == nil {
+		return false, 1005
+	}
 	prevTS, currentTS, nextTS := public.TimesPer30s()
 	key, _ := r["key"].(string)
 	if signature == public.EncryptWithSha256(key+prevTS) || signature == public.EncryptWithSha256(key+currentTS) || signature == public.EncryptWithSha256(key+nextTS) {

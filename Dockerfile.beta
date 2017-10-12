@@ -4,8 +4,9 @@ MAINTAINER sine "sinerwr@gmail.com"
 
 RUN apk --update add git && \
     go-wrapper download github.com/SiCo-Ops/He && \
-    cd $GOPATH/src/github.com/SiCo-Ops/He && \
+    git checkout develop && \
     apk del git && \
+    cd $GOPATH/src/github.com/SiCo-Ops/He && \
     go-wrapper install && \
     cp *.json $GOPATH/bin/ && \
     cd $GOPATH/bin &&\
