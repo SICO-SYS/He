@@ -7,7 +7,7 @@ RUN apk --update add git && \
     cd $GOPATH/src/github.com/SiCo-Ops/He && \
     apk del git && \
     go-wrapper install && \
-    cp *.json $GOPATH/bin/ && \
+    # cp *.json $GOPATH/bin/ && \
     cd $GOPATH/bin &&\
     rm -rf $GOPATH/src
 
